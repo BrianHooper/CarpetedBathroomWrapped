@@ -1,5 +1,11 @@
 from pathlib import Path
 import os
+from datetime import datetime
+
+def WriteTsv(data, filepath):
+    data = ["\t".join([str(y) for y in x]) + "\n" for x in data]
+    with open(filepath, "w", encoding="utf-8") as outfile:
+        outfile.writelines(data)
 
 def find_first_ascii_index(string):
   for i, char in enumerate(string):
@@ -44,8 +50,8 @@ def PreProcessLikesMap(data):
             likesMap[author][emoji].append(line)
     return likesMap
 
-def CalcTotalPosts(data, likesMap):
-    totalMessages = len([x for x in data if len(x[2]) > 0])
+def CalcTotalPosts(resultsPath, data, likesMap):
+    totalTexts = len([x for x in data if len(x[2]) > 0])
     totalPictures = len([x for x in data if "/photos/" in x[3]])
     totalVideos = len([x for x in data if "/videos/" in x[3]])
     totalVoice = len([x for x in data if "/audio/" in x[3]])
@@ -55,7 +61,34 @@ def CalcTotalPosts(data, likesMap):
         for emoji, reactions in emojiMap.items():
             totalReactions += len(reactions)
 
-    return None
+    result = [
+        ["Texts", totalTexts],
+        ["Pictures", totalPictures],
+        ["Videos", totalVideos],
+        ["Voice", totalVoice],
+        ["Reactions", totalReactions],
+    ]
+    WriteTsv(result, resultsPath / "TotalPosts.tsv")
+
+    textsByDayMap = {}
+    for line in data:
+        if len(line[2]) == 0:
+            continue
+        dt = datetime.strptime(line[0], "%b %d, %Y %I:%M:%S %p")
+        date = dt.strftime("%Y-%m-%d")
+        if date not in textsByDayMap:
+            textsByDayMap[date] = 0
+        textsByDayMap[date] += 1
+
+    textsByDay = [[k, v] for k, v in textsByDayMap.items()]
+    textsByDay = sorted(textsByDay, key=lambda x: x[0])
+    WriteTsv(textsByDay, resultsPath / "TotalPostsByDay.tsv")
+
+    textsByDayMax = sorted(textsByDay, key=lambda x: x[1], reverse=True)[:5]
+    textsByDayMin = sorted(textsByDay, key=lambda x: x[1], reverse=False)[:5]
+    agg = [["Max", ""]] + textsByDayMax + [["Min", ""]] + textsByDayMin
+
+    WriteTsv(agg, resultsPath / "TotalPostsByDayAgg.tsv")
 
 def CalcMessagesPerPerson(data):
     messageMap = {}
@@ -77,14 +110,15 @@ def ReadData(filepath):
 
 def Main():
     root = Path("C:/Users/brian/Documents/code/CarpetedBathroom")
-    data = ReadData(root / "output.tsv")
+    data = ReadData(root / "FacebookData" / "output.tsv")
+    resultsPath = root / "Results"
     likesMap = PreProcessLikesMap(data)
 
-    totalPosts = CalcTotalPosts(data, likesMap)
+    CalcTotalPosts(resultsPath, data, likesMap)
     
-    # messagesPerPerson = CalcMessagesPerPerson(data)
-    # likesGiven = CalcLikesGiven(likesMap)
-    pass
+    CalcMessagesPerPerson(data)
+    CalcLikesGiven(likesMap)
+    
 
 if __name__ == "__main__":
     Main()
