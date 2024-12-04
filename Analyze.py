@@ -145,7 +145,7 @@ def CalculatePersonTotals(resultsPath, data, likesMap):
                 if message[1] not in likedPostsMap:
                     likedPostsMap[message[1]] = 0
                 likedPostsMap[message[1]] += 1
-        mostLikedOtherPeople = sorted([[k, v] for k, v in likedPostsMap.items()], key=lambda x: x[1], reverse=True)[:3]
+        mostLikedOtherPeople = sorted([[k, v] for k, v in likedPostsMap.items()], key=lambda x: x[1], reverse=True)[:5]
         
         mostLikedByMap = {}
         for emojiMap in likesMap.values():
@@ -159,8 +159,13 @@ def CalculatePersonTotals(resultsPath, data, likesMap):
                         if likeAuthor not in mostLikedByMap:
                             mostLikedByMap[likeAuthor] = 0
                         mostLikedByMap[likeAuthor] += 1
-        mostLikedBy = sorted([[k, v] for k, v in mostLikedByMap.items()], key=lambda x: x[1], reverse=True)[:3]
+        mostLikedBy = sorted([[k, v] for k, v in mostLikedByMap.items()], key=lambda x: x[1], reverse=True)[:5]
         
+        totalLikesRecieved = 0
+        for message in [x for x in data if x[1] == author and len(x[4]) > 0]:
+            messageLikes = len(message[4].split("%%"))
+            totalLikesRecieved += messageLikes
+
         textsByDayMap = {}
         for line in [x for x in data if x[1] == author]:
             if len(line[2]) == 0:
@@ -175,13 +180,19 @@ def CalculatePersonTotals(resultsPath, data, likesMap):
             "name": author,
             "totalPosts": totalPosts,
             "totalMedia": totalMedia,
-            "totalReactions": totalLikes,
+            "totalReactionsGiven": totalLikes,
+            "totalReactionsRecieved": totalLikesRecieved,
             "mostLiked": mostLikedOtherPeople,
             "mostLikedBy": mostLikedBy,
             "textsByDay": textsByDay
         }
         with open(resultsPath / "people" / f"{author}.json".replace(" ", ""), "w", encoding="utf-8") as outfile:
             json.dump(authorData, outfile)
+
+def CalcMostLikedMedia(resultsPath, data):
+    likedPosts = [x for x in data if len(x[4]) > 0 and len(x[3]) > 0]
+    likedPosts = sorted(likedPosts, key=lambda x: len(x[4].split("%%")), reverse=True)[:10]
+    WriteTsv(likedPosts, resultsPath / "MostLikedMedia.tsv")
 
 def Main():
     root = Path("C:/Users/brian/Documents/code/CarpetedBathroom")
@@ -194,7 +205,24 @@ def Main():
     # CalcLikesGiven(resultsPath, likesMap)
     # CalcMostLikedPosts(resultsPath, data)
     # CalcEmojiTotals(resultsPath, data, likesMap)
-    CalculatePersonTotals(resultsPath, data, likesMap)
+    # CalculatePersonTotals(resultsPath, data, likesMap)
+    # CalcMostLikedMedia(resultsPath, data)
+
+    postsMap = {}
+    laughsMap = {}
+    for line in data:
+        author = line[1]
+        if author not in postsMap:
+            postsMap[author] = 0
+        if author not in laughsMap:
+            laughsMap[author] = 0
+        postsMap[author] += 1
+        if "😆" in line[4]:
+            laughsMap[author] += 1
+    xList = [[k, v] for k, v in laughsMap.items()]
+    xList = [[x[0], postsMap[x[0]], x[1], 100 * (x[1] / postsMap[x[0]])] for x in xList]
+    xList = sorted(xList, key=lambda x: x[3], reverse=True)
+    pass
 
 
 if __name__ == "__main__":

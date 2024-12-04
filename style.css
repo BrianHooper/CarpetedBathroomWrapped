@@ -1,7 +1,62 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 * {
     box-sizing: border-box;  
     font-family: Tahoma, sans-serif;
     font-size: 40px;
+}
+
+.award {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    position: relative;
+}
+
+.awardscard {
+    display: flex;
+    flex-direction: column;
+}
+
+.awardtext {
+    position: absolute;
+    top: 30%;
+}
+
+.awardsimage {
+    display: flex;
+    width: 100%;
+}
+
+.awardsimage > img {
+    width: 100%;
+}
+
+#titleslide {
+    position: relative;
+    width: 100%;
+    display: flex;
+}
+
+#titletext {
+    position: absolute;
+    top: 60px;
+    display: flex;
+    justify-content: center;
+}
+
+#titletext > img {
+    width: 70%;
+    box-shadow: 1px -1px 11px 12px rgba(255,255,255,0.75);
+    -webkit-box-shadow: 1px -1px 11px 12px rgba(255,255,255,0.75);
+    -moz-box-shadow: 1px -1px 11px 12px rgba(255,255,255,0.75);
+}
+
+#titleimage > img {
+    width: 100%;
 }
 
 #base {
@@ -24,26 +79,36 @@
     flex-direction: column;
   }
   
+    .posticon {
+        visibility: hidden;
+    }
+
   .blue {
-    background-color: lightblue;
-    height: 95%;
-    aspect-ratio: 1/2;
+    background-color: rgb(55, 175, 219);
   }
   
   .green {
     background-color: lightgreen;
-    height: 95%;
-    aspect-ratio: 1/2;
   }
   
-  .blue, .green {
+  .purple {
+    background-color: rgb(183, 97, 218);
+  }
+
+  .gold {
+    background-color: rgb(218, 182, 97);
+  }
+  
+  .blue, .green, .blank, .purple, .gold {
     display: inline-block;
     margin: 5px;
     scroll-snap-align: center;
+    height: 95%;
+    aspect-ratio: 1/2;
   }
 
   .card {
-    margin: 80px;
+    margin: 85px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -86,14 +151,31 @@
     background-color: lightskyblue;
     padding: 50px;
     border-radius: 50px;
+    font-size: 30px;
+  }
+
+  .colimage {
+        display: flex;
+        align-items: center;
+        width: 50%;
+  }
+
+    .postimage {
+        width: 100%;
+    }
+
+  .apart {
+    justify-content: space-between;
   }
 
   .postlikes {
-    width: 50%;
     display: flex;
     flex-direction: column;  
     align-self: flex-end;
-    font-size: 12px;
+  }
+
+  .postlike {
+    font-size: 30px;
   }
 
   .posttitle {
