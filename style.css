@@ -2,7 +2,6 @@
     box-sizing: border-box;  
     font-family: Tahoma, sans-serif;
     font-size: 40px;
-
 }
 
 #base {
@@ -33,8 +32,8 @@
   
   .green {
     background-color: lightgreen;
-    height: 50%;
-    aspect-ratio: 2/1;
+    height: 95%;
+    aspect-ratio: 1/2;
   }
   
   .blue, .green {
@@ -49,6 +48,7 @@
     flex-direction: column;
     justify-content: center;
     height: calc(100% - 160px);
+    gap: 50px;
   }
 
   .card > div {
@@ -75,3 +75,49 @@
     display: flex;
     gap: 50px;
   }
+
+  .chart {
+    width:100%;
+    background-color: white;
+    padding: 10px;
+  }
+
+  .posttext {
+    background-color: lightskyblue;
+    padding: 50px;
+    border-radius: 50px;
+  }
+
+  .postlikes {
+    width: 50%;
+    display: flex;
+    flex-direction: column;  
+    align-self: flex-end;
+    font-size: 12px;
+  }
+
+  .posttitle {
+    justify-content: space-between;
+}
+
+.posticon {
+    height: 100px;
+    width: 100px;
+    background-color: black;
+    border-radius: 50px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+.postauthor {
+    font-size: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+img.authoricon {
+    height: 100px;
+    width: 100px;
+}
